@@ -1,7 +1,10 @@
 package com.example.covidtracker
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.example.covidtracker.viewmodel.MainViewModel
@@ -48,5 +51,26 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         viewModel.searchCovid()
+    }
+
+    /**
+     * Action bar
+     */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle presses on the action bar items
+        return when(item.itemId){
+            R.id.action_history -> {
+                val intent = Intent(this, HistoryActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 }
