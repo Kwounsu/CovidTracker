@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
+import com.example.covidtracker.coroutine.HistoryActivity
 import com.example.covidtracker.viewmodel.MainViewModel
 import com.example.covidtracker.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
