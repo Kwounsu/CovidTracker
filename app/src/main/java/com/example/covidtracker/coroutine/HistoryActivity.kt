@@ -3,6 +3,7 @@ package com.example.covidtracker.coroutine
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -66,6 +67,7 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
             createChart(chartRange, covidHistoryList)
             // 0: One Month, 1: Three Month, 2: Six Month
             var rangeSelected = 0
+            seekBar.max = 30
 
             oneMonth.setOnClickListener {
                 if (rangeSelected != 0) {
@@ -75,6 +77,7 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
                     sixMonth.setTextColor(Color.GRAY)
                     createChart(chartRange, covidHistoryList)
                     rangeSelected = 0
+                    seekBar.max = 30
                 }
             }
             threeMonth.setOnClickListener {
@@ -85,6 +88,7 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
                     sixMonth.setTextColor(Color.GRAY)
                     createChart(chartRange, covidHistoryList)
                     rangeSelected = 1
+                    seekBar.max = 90
                 }
             }
             sixMonth.setOnClickListener {
@@ -95,6 +99,7 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
                     sixMonth.setTextColor(Color.BLACK)
                     createChart(chartRange, covidHistoryList)
                     rangeSelected = 2
+                    seekBar.max = 180
                 }
             }
         }
@@ -128,6 +133,11 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
             val day = covid.date.toString().substring(6,8)
             val date = "$monthText $day"
 
+            if (i == 0) {
+                val detail = "$date - $posNum"
+                labelDetail.text = detail
+            }
+
             values
                 .add(PointValue((chartRange-i).toFloat(), covid.positiveIncrease.toFloat())
                     .setLabel("$date\n$posNum"))
@@ -146,5 +156,23 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
 
         val axisX = Axis()
         axisX.setHasLines(true)
+
+        seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                val covid = covidDataArray[chartRange-progress]
+                val posNum = NumberFormat.getIntegerInstance().format(covid.positiveIncrease)
+                val month = covid.date.toString().substring(4,6).toInt()
+                val monthText = DateFormatSymbols().months[month-1].toString()
+                val day = covid.date.toString().substring(6,8)
+                val date = "$monthText - $day"
+                val detail = "$date $posNum"
+                labelDetail.text = detail
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+
+        })
     }
 }
