@@ -42,12 +42,12 @@
                 android:text="@string/recovered"
                 android:textStyle="bold"
                 android:layout_gravity="center"
+                android:layout_marginEnd="10dp"
                 android:layout_column="2"/>
             <TextView
                 android:id="@+id/item_recovered"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#28B463"
                 tools:text="1,000,000"
                 android:textStyle="bold"
                 android:layout_gravity="center"
@@ -72,7 +72,6 @@
                 android:layout_height="wrap_content"
                 tools:text="1,000,000"
                 android:textStyle="bold"
-                android:textColor="#CB4335"
                 android:layout_gravity="center"
                 android:layout_marginEnd="30dp"
                 android:layout_column="1"/>
@@ -80,6 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/death_increase"
+                android:layout_marginEnd="10dp"
                 android:textStyle="bold"
                 android:layout_gravity="center"
                 android:layout_column="2"/>
@@ -88,6 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="1,000,000"
+                android:textColor="#CB4335"
                 android:textStyle="bold"
                 android:layout_gravity="center"
                 android:layout_column="3"/>
@@ -111,7 +112,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="1,000,000"
-                android:textColor="#884EA0"
                 android:textStyle="bold"
                 android:layout_gravity="center"
                 android:layout_marginEnd="30dp"
@@ -120,6 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/confirmed_increase"
+                android:layout_marginEnd="10dp"
                 android:textStyle="bold"
                 android:layout_gravity="center"
                 android:layout_column="2"/>
@@ -128,6 +129,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="1,000,000"
+                android:textColor="#380375"
                 android:textStyle="bold"
                 android:layout_gravity="center"
                 android:layout_column="3"/>

@@ -11,6 +11,7 @@ import com.example.covidtracker.coroutine.HistoryActivity
 import com.example.covidtracker.viewmodel.MainViewModel
 import com.example.covidtracker.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import lecho.lib.hellocharts.model.LineChartData
 import java.text.NumberFormat
 import javax.inject.Inject
 

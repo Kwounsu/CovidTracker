@@ -78,4 +78,7 @@ dependencies {
 
     // Lottie
     implementation 'com.airbnb.android:lottie:3.4.1'
+
+    // HelloCharts
+    implementation 'com.github.lecho:hellocharts-android:v1.5.8'
 }

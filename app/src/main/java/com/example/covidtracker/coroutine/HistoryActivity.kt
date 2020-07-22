@@ -1,21 +1,31 @@
 package com.example.covidtracker.coroutine
 
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.covidtracker.CovidData
-import com.example.covidtracker.MainActivity
 import com.example.covidtracker.R
 import com.example.covidtracker.coroutine.RetrofitObject.getApiService
+import kotlinx.android.synthetic.main.activity_history.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import lecho.lib.hellocharts.model.Axis
+import lecho.lib.hellocharts.model.Line
+import lecho.lib.hellocharts.model.LineChartData
+import lecho.lib.hellocharts.model.PointValue
+import java.text.DateFormatSymbols
+import java.text.NumberFormat
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * This Activity contains a chart and recyclerview of COVID-19 data.
+ * For the Chart, user can choose the range with three options: 1, 3 and 6 months.
+ */
 class HistoryActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var job: Job
     lateinit var covidHistoryList: ArrayList<CovidData>
@@ -30,10 +40,9 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
         // Action bar - Back button enable
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        launch{
+        launch {
             val covidHistoryResponse = getApiService().getCovidHistory()
             covidHistoryList = covidHistoryResponse.body()!!
-            Log.d("MYTAG", "History data: $covidHistoryList")
 
             // Recyclerview object
             val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
@@ -49,6 +58,45 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
             layoutManager.orientation = LinearLayoutManager.VERTICAL
             // Attach the layoutManager to the recyclerview
             recyclerView.layoutManager = layoutManager
+
+            /**
+             * CHART from here
+             */
+            var chartRange: Int = 30
+            createChart(chartRange, covidHistoryList)
+            // 0: One Month, 1: Three Month, 2: Six Month
+            var rangeSelected = 0
+
+            oneMonth.setOnClickListener {
+                if (rangeSelected != 0) {
+                    chartRange = 30
+                    oneMonth.setTextColor(Color.BLACK)
+                    threeMonth.setTextColor(Color.GRAY)
+                    sixMonth.setTextColor(Color.GRAY)
+                    createChart(chartRange, covidHistoryList)
+                    rangeSelected = 0
+                }
+            }
+            threeMonth.setOnClickListener {
+                if (rangeSelected != 1) {
+                    chartRange = 90
+                    oneMonth.setTextColor(Color.GRAY)
+                    threeMonth.setTextColor(Color.BLACK)
+                    sixMonth.setTextColor(Color.GRAY)
+                    createChart(chartRange, covidHistoryList)
+                    rangeSelected = 1
+                }
+            }
+            sixMonth.setOnClickListener {
+                if (rangeSelected != 2) {
+                    chartRange = 180
+                    oneMonth.setTextColor(Color.GRAY)
+                    threeMonth.setTextColor(Color.GRAY)
+                    sixMonth.setTextColor(Color.BLACK)
+                    createChart(chartRange, covidHistoryList)
+                    rangeSelected = 2
+                }
+            }
         }
     }
 
@@ -68,5 +116,35 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun createChart(chartRange:Int, covidDataArray:ArrayList<CovidData>){
+        val values: MutableList<PointValue> = ArrayList()
+        for (i in 0..chartRange){
+            val covid = covidDataArray[i]
+            val posNum = NumberFormat.getIntegerInstance().format(covid.positiveIncrease)
+            val month = covid.date.toString().substring(4,6).toInt()
+            val monthText = DateFormatSymbols().months[month-1].toString()
+            val day = covid.date.toString().substring(6,8)
+            val date = "$monthText $day"
+
+            values
+                .add(PointValue((chartRange-i).toFloat(), covid.positiveIncrease.toFloat())
+                    .setLabel("$date\n$posNum"))
+        }
+        val line = Line(values)
+            .setColor(Color.LTGRAY)
+            .setHasPoints(true)
+            .setHasLabels(true)
+            .setHasLabelsOnlyForSelected(true)
+            .setPointRadius(1)
+        val lines: MutableList<Line> = ArrayList()
+        lines.add(line)
+        val data = LineChartData(lines)
+        chart.lineChartData = data
+        chart.isZoomEnabled
+
+        val axisX = Axis()
+        axisX.setHasLines(true)
     }
 }
