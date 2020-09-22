@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.covidtracker.CovidData
@@ -29,7 +30,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class HistoryActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var job: Job
-    lateinit var covidHistoryList: ArrayList<CovidData>
+    private lateinit var covidHistoryList: ArrayList<CovidData>
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
@@ -42,23 +43,31 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         launch {
-            val covidHistoryResponse = getApiService().getCovidHistory()
-            covidHistoryList = covidHistoryResponse.body()!!
-
+            setItemsData()
             // Recyclerview object
             val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
-
             // Create adapter passing in the data set
-            val adapter = RecyclerViewAdapter(covidHistoryList)
-
             // Attach the adapter to the recyclerview
-            recyclerView.adapter = adapter
-
+            recyclerView.adapter = RecyclerViewAdapter(covidHistoryList)
             // Set layout manager
             val layoutManager = LinearLayoutManager(this@HistoryActivity)
             layoutManager.orientation = LinearLayoutManager.VERTICAL
             // Attach the layoutManager to the recyclerview
             recyclerView.layoutManager = layoutManager
+
+            // Swipe to refresh
+            swipeRefreshLayout.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this@HistoryActivity, R.color.colorPrimary))
+            swipeRefreshLayout.setColorSchemeColors(Color.WHITE)
+            swipeRefreshLayout.setOnRefreshListener {
+                launch {
+                    covidHistoryList.clear()
+                    setItemsData()
+                    recyclerView.adapter = RecyclerViewAdapter(covidHistoryList)
+                    // Attach the layoutManager to the recyclerview
+                    recyclerView.layoutManager = layoutManager
+                }
+                swipeRefreshLayout.isRefreshing = false
+            }
 
             /**
              * CHART from here
@@ -105,6 +114,11 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    suspend fun setItemsData() {
+        val covidHistoryResponse = getApiService().getCovidHistory()
+        covidHistoryList = covidHistoryResponse.body()!!
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
@@ -123,7 +137,7 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
         return super.onOptionsItemSelected(item)
     }
 
-    fun createChart(chartRange:Int, covidDataArray:ArrayList<CovidData>){
+    private fun createChart(chartRange:Int, covidDataArray:ArrayList<CovidData>){
         val values: MutableList<PointValue> = ArrayList()
         for (i in 0..chartRange){
             val covid = covidDataArray[i]
@@ -175,4 +189,5 @@ class HistoryActivity : AppCompatActivity(), CoroutineScope {
 
         })
     }
+
 }

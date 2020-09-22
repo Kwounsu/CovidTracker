@@ -81,4 +81,7 @@ dependencies {
 
     // HelloCharts
     implementation 'com.github.lecho:hellocharts-android:v1.5.8'
+
+    // SwipeRefresh
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 }
